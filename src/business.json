@@ -1,0 +1,478 @@
+{
+  "id": "counterdesk",
+  "name": "CounterDesk",
+  "tagline": "Sell clearly. Know your stock.",
+  "category": "Retail shop",
+  "color": "#047857",
+  "description": "Offline stock, supplier purchases, retail sales and customer balances for general stores, cosmetics and stationery shops.",
+  "entities": [
+    {
+      "key": "customers",
+      "label": "Customers",
+      "singular": "customer",
+      "description": "Contact details kept locally on this computer.",
+      "primary": "name",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "phone",
+          "label": "Phone",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "address",
+          "label": "Address",
+          "type": "textarea"
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "type": "textarea"
+        }
+      ],
+      "columns": [
+        "name",
+        "phone",
+        "address"
+      ]
+    },
+    {
+      "key": "suppliers",
+      "label": "Suppliers",
+      "singular": "supplier",
+      "description": "Contact details kept locally on this computer.",
+      "primary": "name",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "phone",
+          "label": "Phone",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "address",
+          "label": "Address",
+          "type": "textarea"
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "type": "textarea"
+        }
+      ],
+      "columns": [
+        "name",
+        "phone",
+        "address"
+      ]
+    },
+    {
+      "key": "products",
+      "label": "Products & stock",
+      "singular": "product",
+      "description": "Maintain retail items, reference prices and current quantities. Purchases add stock and sales deduct stock.",
+      "primary": "name",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Product name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "sku",
+          "label": "SKU / barcode",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Category",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "unit",
+          "label": "Unit",
+          "type": "text",
+          "required": true,
+          "default": "piece"
+        },
+        {
+          "key": "cost",
+          "label": "Reference purchase cost",
+          "type": "money",
+          "required": true,
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "price",
+          "label": "Selling price",
+          "type": "money",
+          "required": true,
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "stock",
+          "label": "Opening / adjusted stock",
+          "type": "number",
+          "required": true,
+          "min": 0,
+          "default": 0,
+          "integer": true
+        },
+        {
+          "key": "reorderLevel",
+          "label": "Reorder level",
+          "type": "number",
+          "min": 0,
+          "default": 5,
+          "integer": true
+        },
+        {
+          "key": "image",
+          "label": "Product image",
+          "type": "image"
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "type": "textarea"
+        }
+      ],
+      "columns": [
+        "name",
+        "sku",
+        "category",
+        "price",
+        "stock",
+        "reorderLevel"
+      ],
+      "unique": [
+        [
+          "sku"
+        ]
+      ]
+    },
+    {
+      "key": "purchases",
+      "label": "Supplier purchases",
+      "singular": "purchase",
+      "description": "Receive stock into the shop and track how much has been paid to the supplier.",
+      "primary": "reference",
+      "fields": [
+        {
+          "key": "reference",
+          "label": "Supplier invoice / purchase reference",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "supplier",
+          "label": "Supplier",
+          "type": "reference",
+          "required": true,
+          "reference": "suppliers"
+        },
+        {
+          "key": "date",
+          "label": "Received date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "key": "items",
+          "label": "Purchase items",
+          "type": "lines",
+          "required": true,
+          "reference": "products",
+          "priceField": "cost",
+          "stockField": "stock",
+          "stockEffect": 1,
+          "integer": true
+        },
+        {
+          "key": "amount",
+          "label": "Purchase total",
+          "type": "money",
+          "required": true,
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "paid",
+          "label": "Paid to supplier",
+          "type": "money",
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "paymentMethod",
+          "label": "Initial payment method",
+          "type": "select",
+          "required": true,
+          "options": [
+            "cash",
+            "card",
+            "bank"
+          ],
+          "default": "cash",
+          "hint": "Applies only to money received when this record is created; later receipts choose their own method."
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Received",
+            "Cancelled"
+          ]
+        },
+        {
+          "key": "notes",
+          "label": "Purchase notes",
+          "type": "textarea"
+        }
+      ],
+      "columns": [
+        "reference",
+        "supplier",
+        "date",
+        "amount",
+        "paid",
+        "status"
+      ],
+      "workflow": {
+        "field": "status",
+        "initial": "Received",
+        "states": [
+          "Received",
+          "Cancelled"
+        ],
+        "terminal": [
+          "Cancelled"
+        ]
+      },
+      "finance": {
+        "total": "amount",
+        "paid": "paid"
+      },
+      "calculations": [
+        {
+          "target": "amount",
+          "op": "sumLines",
+          "fields": [
+            "items"
+          ]
+        }
+      ],
+      "unique": [
+        [
+          "supplier",
+          "reference"
+        ]
+      ]
+    },
+    {
+      "key": "sales",
+      "label": "Sales & invoices",
+      "singular": "sale",
+      "description": "Bill retail items with automatic stock deduction and track remaining customer balances.",
+      "primary": "reference",
+      "fields": [
+        {
+          "key": "reference",
+          "label": "Bill reference",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "customer",
+          "label": "Customer",
+          "type": "reference",
+          "reference": "customers"
+        },
+        {
+          "key": "date",
+          "label": "Sale date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "key": "items",
+          "label": "Sale items",
+          "type": "lines",
+          "required": true,
+          "reference": "products",
+          "priceField": "price",
+          "stockField": "stock",
+          "stockEffect": -1,
+          "integer": true
+        },
+        {
+          "key": "amount",
+          "label": "Bill total",
+          "type": "money",
+          "required": true,
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "paid",
+          "label": "Payment received",
+          "type": "money",
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "paymentMethod",
+          "label": "Initial payment method",
+          "type": "select",
+          "required": true,
+          "options": [
+            "cash",
+            "card",
+            "bank"
+          ],
+          "default": "cash",
+          "hint": "Applies only to money received when this record is created; later receipts choose their own method."
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Recorded",
+            "Completed",
+            "Cancelled"
+          ]
+        },
+        {
+          "key": "notes",
+          "label": "Sale / customer notes",
+          "type": "textarea"
+        }
+      ],
+      "columns": [
+        "reference",
+        "customer",
+        "date",
+        "amount",
+        "paid",
+        "status"
+      ],
+      "workflow": {
+        "field": "status",
+        "initial": "Recorded",
+        "states": [
+          "Recorded",
+          "Completed",
+          "Cancelled"
+        ],
+        "terminal": [
+          "Completed",
+          "Cancelled"
+        ]
+      },
+      "finance": {
+        "total": "amount",
+        "paid": "paid"
+      },
+      "calculations": [
+        {
+          "target": "amount",
+          "op": "sumLines",
+          "fields": [
+            "items"
+          ]
+        }
+      ],
+      "unique": [
+        [
+          "reference"
+        ]
+      ]
+    },
+    {
+      "key": "expenses",
+      "label": "Expenses",
+      "singular": "expense",
+      "description": "Record business spending independently of customer receipts.",
+      "primary": "description",
+      "fields": [
+        {
+          "key": "description",
+          "label": "Description",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "date",
+          "label": "Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "key": "category",
+          "label": "Category",
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "amount",
+          "label": "Amount",
+          "type": "money",
+          "required": true,
+          "min": 0,
+          "default": 0
+        },
+        {
+          "key": "method",
+          "label": "Paid through",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Cash",
+            "Card",
+            "Bank"
+          ]
+        },
+        {
+          "key": "notes",
+          "label": "Notes",
+          "type": "textarea"
+        }
+      ],
+      "columns": [
+        "description",
+        "date",
+        "category",
+        "amount"
+      ]
+    }
+  ],
+  "limitations": [
+    "Use the product SKU/barcode field for identification; dedicated barcode-scanner focus/lookup is not implemented in this pilot.",
+    "Opening/adjusted stock can be edited manually; no separate stock-count or wastage history yet.",
+    "Purchase and sales finance are separate; supplier payments must not be interpreted as sales collections.",
+    "No taxes, discounts, batch expiry, serial-number inventory, weighted scale integration or profit/cost-of-goods calculation.",
+    "Paid purchase/sale cancellation and customer refunds are not supported. Unpaid stock movements can be cancelled only when reversal leaves valid stock.",
+    "Select a named customer for credit sales so balances remain attributable; anonymous walk-in balances are not suitable for an udhaar ledger."
+  ]
+}
